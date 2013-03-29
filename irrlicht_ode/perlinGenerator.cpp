@@ -52,17 +52,6 @@ void destroyPixmap(pixmap *p)
 
 
 //-----------------------------------------------------------------------------
-// Vymazani pixmapy
-//-----------------------------------------------------------------------------
-void clearPixmap(const pixmap *p)
-{
-	if (!p) return;
-	if (!p->pixels) return;
-	memset(p->pixels, 0, 3*p->width*p->height);
-}
-
-
-//-----------------------------------------------------------------------------
 // Zmena barvy pixelu na zadanych souradnicich
 //-----------------------------------------------------------------------------
 void putpixel(pixmap *p,

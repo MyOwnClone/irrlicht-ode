@@ -12,25 +12,6 @@ static double g2[B + B + 2][2];
 static double g1[B + B + 2];
 static int start = 1;
 
-double noise1(double arg)
-{
-   int bx0, bx1;
-   double rx0, rx1, sx, t, u, v, vec[1];
-
-   vec[0] = arg;
-   if (start) {
-      start = 0;
-      init();
-   }
-
-   setup(0,bx0,bx1,rx0,rx1);
-
-   sx = s_curve(rx0);
-   u = rx0 * g1[ p[ bx0 ] ];
-   v = rx1 * g1[ p[ bx1 ] ];
-
-   return(lerp(sx, u, v));
-}
 
 double noise2(double vec[2])
 {
@@ -66,56 +47,6 @@ double noise2(double vec[2])
    b = lerp(sx, u, v);
 
    return lerp(sy, a, b);
-}
-
-double noise3(double vec[3])
-{
-   int bx0, bx1, by0, by1, bz0, bz1, b00, b10, b01, b11;
-   double rx0, rx1, ry0, ry1, rz0, rz1, *q, sy, sz, a, b, c, d, t, u, v;
-   int i, j;
-
-   if (start) {
-      start = 0;
-      init();
-   }
-
-   setup(0, bx0,bx1, rx0,rx1);
-   setup(1, by0,by1, ry0,ry1);
-   setup(2, bz0,bz1, rz0,rz1);
-
-   i = p[ bx0 ];
-   j = p[ bx1 ];
-
-   b00 = p[ i + by0 ];
-   b10 = p[ j + by0 ];
-   b01 = p[ i + by1 ];
-   b11 = p[ j + by1 ];
-
-   t  = s_curve(rx0);
-   sy = s_curve(ry0);
-   sz = s_curve(rz0);
-
-   q = g3[ b00 + bz0 ] ; u = at3(rx0,ry0,rz0);
-   q = g3[ b10 + bz0 ] ; v = at3(rx1,ry0,rz0);
-   a = lerp(t, u, v);
-
-   q = g3[ b01 + bz0 ] ; u = at3(rx0,ry1,rz0);
-   q = g3[ b11 + bz0 ] ; v = at3(rx1,ry1,rz0);
-   b = lerp(t, u, v);
-
-   c = lerp(sy, a, b);
-
-   q = g3[ b00 + bz1 ] ; u = at3(rx0,ry0,rz1);
-   q = g3[ b10 + bz1 ] ; v = at3(rx1,ry0,rz1);
-   a = lerp(t, u, v);
-
-   q = g3[ b01 + bz1 ] ; u = at3(rx0,ry1,rz1);
-   q = g3[ b11 + bz1 ] ; v = at3(rx1,ry1,rz1);
-   b = lerp(t, u, v);
-
-   d = lerp(sy, a, b);
-
-   return lerp(sz, c, d);
 }
 
 void normalize2(double v[2])
@@ -178,22 +109,6 @@ void init(void)
    "beta" is the harmonic scaling/spacing, typically 2.
 */
 
-double PerlinNoise1D(double x,double alpha,double beta,int n)
-{
-   int i;
-   double val,sum = 0;
-   double p,scale = 1;
-
-   p = x;
-   for (i=0;i<n;i++) {
-      val = noise1(p);
-      sum += val / scale;
-      scale *= alpha;
-      p *= beta;
-   }
-   return(sum);
-}
-
 double PerlinNoise2D(double x,double y,double alpha,double beta,int n)
 {
    int i;
@@ -208,26 +123,6 @@ double PerlinNoise2D(double x,double y,double alpha,double beta,int n)
       scale *= alpha;
       p[0] *= beta;
       p[1] *= beta;
-   }
-   return(sum);
-}
-
-double PerlinNoise3D(double x,double y,double z,double alpha,double beta,int n)
-{
-   int i;
-   double val,sum = 0;
-   double p[3],scale = 1;
-
-   p[0] = x;
-   p[1] = y;
-   p[2] = z;
-   for (i=0;i<n;i++) {
-      val = noise3(p);
-      sum += val / scale;
-      scale *= alpha;
-      p[0] *= beta;
-      p[1] *= beta;
-      p[2] *= beta;
    }
    return(sum);
 }

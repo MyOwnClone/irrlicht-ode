@@ -24,8 +24,8 @@ int main()
 	PhysicsContext odeContext;
 	std::vector<PlaceableObject> objects;
 
-	odeContext.sceneWidth = 250;
-	odeContext.sceneHeight = 250;
+	odeContext.sceneWidth = 256;
+	odeContext.sceneHeight = 256;
 
 	lineWidth = odeContext.sceneWidth;
 
@@ -45,17 +45,16 @@ int main()
 	SetupGui(guienv);
 
 	AddActors(smgr, driver, odeContext, objects );
-	//AddGround(smgr, driver, odeContext.sceneWidth, odeContext.sceneHeight);
 	SetupLightsAndShadows(smgr, driver);
 
 	//----------------
-	auto scale = 20;
+	auto scale = 80;
 
 	TerrainMeshGenerator terrainMesh;
 
 	auto heightMap = new HeightMap(odeContext.sceneWidth, odeContext.sceneHeight);
 	pixmapInstance = GetHeightMap(odeContext.sceneWidth, odeContext.sceneHeight, 8);
-	heightMap->generate(GetHeightMapFunc);
+	//heightMap->Generate(GetHeightMapFunc);
 	terrainMesh.init(*heightMap, scale, white_colour_func, driver);
 
 	auto terrainMeshnode = smgr->addMeshSceneNode(terrainMesh.Mesh);
@@ -86,6 +85,8 @@ int main()
 	// makes AABB computation more accurate than +/-INF.
 	dGeomHeightfieldDataSetBounds( heightid, REAL( -300.0 ), REAL( +300.0 ) );
 	dGeomID gheight = dCreateHeightfield( odeContext.space, heightid, 1 );
+
+	//dGeomHeightfieldGetHeightfieldData()
 
 	dVector3 pos;
 	pos[ 0 ] = 0;
