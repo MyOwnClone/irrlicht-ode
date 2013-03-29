@@ -17,7 +17,7 @@ using namespace gui;
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-#define MAX_CONTACTS 16
+#define MAX_CONTACTS 32
 
 struct PhysicsContext
 {
@@ -38,6 +38,7 @@ struct GenericObject
 {
 	irr::core::vector3df position;
 	irr::core::vector3df size;
+	irr::core::vector3df rotation;
 	double density;
 };
 
@@ -62,11 +63,12 @@ void SetupOde(PhysicsContext &physicsContext);
 void SimulationStep(PhysicsContext &physicsContext);
 void nearCollisionCallback(void* data, dGeomID o1, dGeomID o2);
 void QuaternionToEuler(const dQuaternion quaternion, vector3df &euler);
-void AddOdeActor(PhysicsContext &physicsContext, PhysicalObject &physicalObject, core::vector3df position, core::vector3df size, double density);
+void AddOdeActor(PhysicsContext &physicsContext, PhysicalObject &physicalObject, core::vector3df position, core::vector3df size, core::vector3df rotation, double density);
 void UpdateActor(PhysicsContext &physicsContext, PlaceableObject &placeableObject);
 void AddActor(PhysicsContext &physicsContext, ISceneManager* smgr, IVideoDriver* driver, PlaceableObject &placeableObject);
 void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &physicsContext, std::vector<PlaceableObject> &objects);
 void UpdateActors(PhysicsContext &physicsContext, std::vector<PlaceableObject> &objects);
+double randFloat(double a, double b);
 
 int main()
 {
@@ -97,6 +99,8 @@ int main()
 
 	auto infotext = guienv->addStaticText(L"Irrlicht",	rect<s32>(10, 10, 200, 40), true);	
 
+	auto frameCounter = 0;
+
 	while(device->run())
 	{
 		driver->beginScene(true, true, SColor(255, 0, 0, 0));
@@ -109,11 +113,13 @@ int main()
 		strFps += (s32)driver->getFPS();       
 		infotext->setText(strFps.c_str());
 
-		SimulationStep(odeContext);
-		UpdateActors(odeContext, objects);
+		if (frameCounter % 30 == 0)
+		{
+			SimulationStep(odeContext);
+			UpdateActors(odeContext, objects);
+		}
 
-		/*auto oldRotation = cubeSceneNode->getRotation();
-		cubeSceneNode->setRotation(vector3df(0.1, 0.1, 0.1)+oldRotation);*/
+		frameCounter++;
 	}
 
 	device->drop();
@@ -305,7 +311,7 @@ void QuaternionToEuler(const dQuaternion quaternion, vector3df &euler)
 		*irr::core::RADTODEG);
 }
 
-void AddOdeActor( PhysicsContext &physicsContext, PhysicalObject &physicalObject, core::vector3df position, core::vector3df size, double density )
+void AddOdeActor( PhysicsContext &physicsContext, PhysicalObject &physicalObject, core::vector3df position, core::vector3df size, core::vector3df rotation, double density )
 {
 	auto body = dBodyCreate(physicsContext.world);
 
@@ -316,6 +322,27 @@ void AddOdeActor( PhysicsContext &physicsContext, PhysicalObject &physicalObject
 
 	dBodySetPosition(body, position.X, position.Y, position.Z);
 	dBodySetLinearVel(body, 0, 0, 0);
+
+	//---
+	dMatrix3 A, B, C, I, Rx, Ry, Rz;
+
+	//set up rotation matrices
+	dRFromAxisAndAngle(Rz, 0, 0, 1, rotation.Z);
+	dRFromAxisAndAngle(Ry, 0, 1, 0, rotation.Y);
+	dRFromAxisAndAngle(Rx, 1, 0, 0, rotation.X);
+
+	// matrix for rotation around x
+	dRFromAxisAndAngle(I, 1, 0, 0, 0);
+
+	dMultiply0(A, I, Rx, 3, 3, 3);
+	dMultiply0(B, A, Ry, 3, 3, 3);
+	dMultiply0(C, B, Rz, 3, 3, 3);
+
+	// set final rotation of body
+	dBodySetRotation(body, C);
+	//---
+
+
 	//dBodySetRotation(body, rotation);
 
 	//dBodySetData(this->body, (void*)(this));
@@ -362,9 +389,14 @@ void UpdateActor(PhysicsContext &physicsContext, PlaceableObject &placeableObjec
 	}
 }
 
+double randFloat(double a, double b)
+{
+	return ((b-a)*((double)rand()/RAND_MAX))+a;
+}
+
 void AddActor(PhysicsContext &physicsContext, ISceneManager* smgr, IVideoDriver* driver, PlaceableObject &placeableObject)
 {
-	AddOdeActor(physicsContext, placeableObject.physicalObject, placeableObject.genericObject.position, placeableObject.genericObject.size, placeableObject.genericObject.density);
+	AddOdeActor(physicsContext, placeableObject.physicalObject, placeableObject.genericObject.position, placeableObject.genericObject.size, placeableObject.genericObject.rotation, placeableObject.genericObject.density);
 
 	placeableObject.visibleObject.node = smgr->addMeshSceneNode(smgr->getGeometryCreator()->createCubeMesh());
 
@@ -384,19 +416,22 @@ void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &physi
 	auto width = physicsContext.sceneWidth;
 	auto height = physicsContext.sceneHeight;
 
-	auto y = 20.0f;
-
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 40; i++)
 	{
-		auto x = -(width/2.0f) + rand()%(width);
-		auto z = -(height/2.0f) + rand()%(height);
+		auto y = randFloat(20, 150);
+		auto x = randFloat(-2*width, 2*width);
+		auto z = randFloat(-2*height, 2*height);
 
-		auto size = vector3df(1, 1, 1);
+		auto sizeKoef = randFloat(1, 3);
+
+		auto size = vector3df(sizeKoef, sizeKoef, sizeKoef);
 
 		PlaceableObject po;
 		po.genericObject.position = vector3df(x, y, z);
 		po.genericObject.size = size;
 		po.genericObject.density = 0.1;
+
+		po.genericObject.rotation = vector3df(randFloat(0, 1), randFloat(0, 1), randFloat(0, 1));
 
 		AddActor(physicsContext, smgr, driver, po);
 
