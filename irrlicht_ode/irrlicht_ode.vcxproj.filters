@@ -33,9 +33,6 @@
     <ClCompile Include="perlinMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="heightMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="controllableCamera.h">
@@ -51,9 +48,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="terrain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="heightMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

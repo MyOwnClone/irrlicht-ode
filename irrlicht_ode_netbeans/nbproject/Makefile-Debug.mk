@@ -21,7 +21,7 @@ FC=gfortran
 AS=as.exe
 
 # Macros
-CND_PLATFORM=MinGW-Windows
+CND_PLATFORM=Cygwin_4.x-Windows
 CND_CONF=Debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -36,6 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/420018985/demo.o \
 	${OBJECTDIR}/_ext/420018985/controllableCamera.o \
+	${OBJECTDIR}/_ext/420018985/heightMap.o \
 	${OBJECTDIR}/_ext/420018985/perlinMath.o \
 	${OBJECTDIR}/_ext/420018985/main.o \
 	${OBJECTDIR}/_ext/420018985/terrain.o \
@@ -46,8 +47,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-std=c++11 -fpermissive
+CXXFLAGS=-std=c++11 -fpermissive
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -56,19 +57,19 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L../../libs
+LDLIBSOPTIONS=-L../../libs ../../libs/libIrrlicht.a ../../libs/libode.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/irrlicht_ode_netbeans.exe
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ../irrlicht_ode_netbeans.exe
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/irrlicht_ode_netbeans.exe: Irrlicht.lib
+../irrlicht_ode_netbeans.exe: ../../libs/libIrrlicht.a
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/irrlicht_ode_netbeans.exe: ode_double.lib
+../irrlicht_ode_netbeans.exe: ../../libs/libode.a
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/irrlicht_ode_netbeans.exe: ${OBJECTFILES}
-	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/irrlicht_ode_netbeans ${OBJECTFILES} ${LDLIBSOPTIONS} 
+../irrlicht_ode_netbeans.exe: ${OBJECTFILES}
+	${MKDIR} -p ..
+	${LINK.cc} -o ../irrlicht_ode_netbeans.exe ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/_ext/420018985/demo.o: ../irrlicht_ode/demo.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/420018985
@@ -79,6 +80,11 @@ ${OBJECTDIR}/_ext/420018985/controllableCamera.o: ../irrlicht_ode/controllableCa
 	${MKDIR} -p ${OBJECTDIR}/_ext/420018985
 	${RM} $@.d
 	$(COMPILE.cc) -g -DdDOUBLE -I../../headers/include/irrlicht -I../../headers/include/ -I../../headers/ -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/420018985/controllableCamera.o ../irrlicht_ode/controllableCamera.cpp
+
+${OBJECTDIR}/_ext/420018985/heightMap.o: ../irrlicht_ode/heightMap.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/420018985
+	${RM} $@.d
+	$(COMPILE.cc) -g -DdDOUBLE -I../../headers/include/irrlicht -I../../headers/include/ -I../../headers/ -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/420018985/heightMap.o ../irrlicht_ode/heightMap.cpp
 
 ${OBJECTDIR}/_ext/420018985/perlinMath.o: ../irrlicht_ode/perlinMath.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/420018985
@@ -106,7 +112,7 @@ ${OBJECTDIR}/_ext/420018985/perlinGenerator.o: ../irrlicht_ode/perlinGenerator.c
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/irrlicht_ode_netbeans.exe
+	${RM} ../irrlicht_ode_netbeans.exe
 
 # Subprojects
 .clean-subprojects:

@@ -3,7 +3,6 @@
 
 #include "perlinGenerator.h"
 #include "irrlicht.h"
-#include "heightMap.h"
 
 extern pixmap *pixmapInstance;
 
@@ -45,13 +44,22 @@ public:
 	// SMeshBuffer. This function chops it into pieces and generates a
 	// buffer from each one.
 
-	void init(HeightMap &hm, f32 scale, colour_func cf, IVideoDriver *driver);
+	//void init(HeightMap &hm, f32 scale, colour_func cf, IVideoDriver *driver);
 
 	// Generate a SMeshBuffer which represents all the vertices and
 	// indices for values of y between y0 and y1, and add it to the
 	// mesh.
 
-	void addstrip(const HeightMap &hm, colour_func cf, u16 y0, u16 y1, u32 bufNum);
+	//void addstrip(const HeightMap &hm, colour_func cf, u16 y0, u16 y1, u32 bufNum);
+
+	void addstrip(pixmap *pixmapInstance, colour_func cf, u16 y0, u16 y1, u32 bufNum);
+	void init(pixmap *pixmapInstance, f32 scale, colour_func cf, IVideoDriver *driver);
+	core::vector3df GetNormal(u16 x, u16 y, f32 s) const;
+
+	f32 Get(int x, int y) const
+	{
+		return pixmapInstance->pixels[(x*3) + (y*Width*3)]/255.0;
+	}
 };
 
 #endif

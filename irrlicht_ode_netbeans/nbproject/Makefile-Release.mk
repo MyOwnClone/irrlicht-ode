@@ -36,6 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/420018985/demo.o \
 	${OBJECTDIR}/_ext/420018985/controllableCamera.o \
+	${OBJECTDIR}/_ext/420018985/heightMap.o \
 	${OBJECTDIR}/_ext/420018985/perlinMath.o \
 	${OBJECTDIR}/_ext/420018985/main.o \
 	${OBJECTDIR}/_ext/420018985/terrain.o \
@@ -75,6 +76,11 @@ ${OBJECTDIR}/_ext/420018985/controllableCamera.o: ../irrlicht_ode/controllableCa
 	${MKDIR} -p ${OBJECTDIR}/_ext/420018985
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/420018985/controllableCamera.o ../irrlicht_ode/controllableCamera.cpp
+
+${OBJECTDIR}/_ext/420018985/heightMap.o: ../irrlicht_ode/heightMap.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/420018985
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/420018985/heightMap.o ../irrlicht_ode/heightMap.cpp
 
 ${OBJECTDIR}/_ext/420018985/perlinMath.o: ../irrlicht_ode/perlinMath.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/420018985

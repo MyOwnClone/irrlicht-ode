@@ -20,6 +20,7 @@
                    projectFiles="true">
       <itemPath>../irrlicht_ode/controllableCamera.cpp</itemPath>
       <itemPath>../irrlicht_ode/demo.cpp</itemPath>
+      <itemPath>../irrlicht_ode/heightMap.cpp</itemPath>
       <itemPath>../irrlicht_ode/main.cpp</itemPath>
       <itemPath>../irrlicht_ode/perlinGenerator.cpp</itemPath>
       <itemPath>../irrlicht_ode/perlinMath.cpp</itemPath>
@@ -42,7 +43,7 @@
     <conf name="Debug" type="1">
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
-        <compilerSet>default</compilerSet>
+        <compilerSet>Cygwin_4.x|Cygwin_4.x</compilerSet>
       </toolsSet>
       <compileType>
         <ccTool>
@@ -51,15 +52,20 @@
             <pElem>../../headers/include/</pElem>
             <pElem>../../headers/</pElem>
           </incDir>
+          <commandLine>-std=c++11 -fpermissive</commandLine>
           <preprocessorList>
             <Elem>dDOUBLE</Elem>
           </preprocessorList>
         </ccTool>
         <linkerTool>
+          <output>../irrlicht_ode_netbeans.exe</output>
           <linkerAddLib>
             <pElem>../../libs</pElem>
           </linkerAddLib>
-          <additionalDep>Irrlicht.lib ode_double.lib</additionalDep>
+          <linkerLibItems>
+            <linkerLibFileItem>../../libs/libIrrlicht.a</linkerLibFileItem>
+            <linkerLibFileItem>../../libs/libode.a</linkerLibFileItem>
+          </linkerLibItems>
         </linkerTool>
       </compileType>
     </conf>

@@ -84,7 +84,6 @@
   <ItemGroup>
     <ClCompile Include="controllableCamera.cpp" />
     <ClCompile Include="demo.cpp" />
-    <ClCompile Include="heightMap.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="perlinGenerator.cpp" />
     <ClCompile Include="perlinMath.cpp" />
@@ -93,7 +92,6 @@
   <ItemGroup>
     <ClInclude Include="controllableCamera.h" />
     <ClInclude Include="demo.h" />
-    <ClInclude Include="heightMap.h" />
     <ClInclude Include="perlinGenerator.h" />
     <ClInclude Include="perlinMath.h" />
     <ClInclude Include="terrain.h" />
