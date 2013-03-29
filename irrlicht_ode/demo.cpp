@@ -77,7 +77,7 @@ void SetupCamera( ISceneManager* smgr, IrrlichtDevice * device )
 	irr::scene::ICameraSceneNode* camera = smgr->addCameraSceneNode(0, irr::core::vector3df(0, 50, 50), irr::core::vector3df(0, 0, 0));
 
 	if (camera) {
-		ControllableCamera *snaca = new ControllableCamera(device->getCursorControl(), 300, 10, 100, camera, 100);
+		ControllableCamera *snaca = new ControllableCamera(device->getCursorControl(), 300, 10, 100, camera, 200);
 
 		irr::scene::ISceneNodeAnimator* anim = dynamic_cast<irr::scene::ISceneNodeAnimator*>(snaca);
 		camera->addAnimator(anim);
@@ -160,6 +160,9 @@ void nearCollisionCallback(void* data, dGeomID o1, dGeomID o2)
 		contact[i].surface.bounce_vel=1e-9f;
 		contact[i].surface.soft_cfm=1e-6f;
 	}
+
+	auto class1 = dGeomGetClass(o1);
+	auto class2 = dGeomGetClass(o2);
 
 	int numc=dCollide(o1,o2,MAX_CONTACTS,&contact[0].geom,sizeof(dContact));
 
@@ -389,7 +392,7 @@ void AddActor(PhysicsContext &physicsContext, ISceneManager* smgr, IVideoDriver*
 		placeableObject.visibleObject.node->setMaterialFlag(video::EMF_LIGHTING, false);
 
 		placeableObject.visibleObject.node->setPosition(placeableObject.genericObject.position);
-		placeableObject.visibleObject.node->setScale(vector3df(placeableObject.genericObject.size.X, placeableObject.genericObject.size.Y, placeableObject.genericObject.size.Z));
+		placeableObject.visibleObject.node->setScale(vector3df(placeableObject.genericObject.size.X/2, placeableObject.genericObject.size.Y/2, placeableObject.genericObject.size.Z/2));
 		((IMeshSceneNode*)placeableObject.visibleObject.node)->addShadowVolumeSceneNode();
 	}
 }
@@ -399,13 +402,13 @@ void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &physi
 	auto width = physicsContext.sceneWidth;
 	auto height = physicsContext.sceneHeight;
 
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 200; i++)
 	{
 		auto y = randFloat(50, 350);
 		auto x = randFloat(-2*width, 2*width);
 		auto z = randFloat(-2*height, 2*height);
 
-		auto sizeKoef = randFloat(1, 3);
+		auto sizeKoef = randFloat(1, 5);
 
 		auto size = vector3df(sizeKoef, sizeKoef, sizeKoef);
 
