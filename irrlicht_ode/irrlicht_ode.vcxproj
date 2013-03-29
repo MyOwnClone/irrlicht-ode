@@ -85,10 +85,17 @@
     <ClCompile Include="controllableCamera.cpp" />
     <ClCompile Include="demo.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="perlinGenerator.cpp" />
+    <ClCompile Include="perlinMath.cpp" />
+    <ClCompile Include="terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="controllableCamera.h" />
     <ClInclude Include="demo.h" />
+    <ClInclude Include="heightMap.h" />
+    <ClInclude Include="perlinGenerator.h" />
+    <ClInclude Include="perlinMath.h" />
+    <ClInclude Include="terrain.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

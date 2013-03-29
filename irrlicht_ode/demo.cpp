@@ -33,26 +33,6 @@ void SetupLightsAndShadows( ISceneManager* smgr, IVideoDriver* driver )
 	smgr->setShadowColor(video::SColor(150,0,0,0));
 }
 
-void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &odeContext )
-{
-	scene::ISceneNode* cubeSceneNode = smgr->addMeshSceneNode(smgr->getGeometryCreator()->createCubeMesh());
-
-	if (cubeSceneNode)
-	{
-		cubeSceneNode->setMaterialTexture(0, driver->getTexture("t351sml.jpg"));
-		cubeSceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
-		scene::ISceneNodeAnimator* anim = smgr->createFlyCircleAnimator(core::vector3df(0,30,0), 5.0f);
-		if (anim)
-		{
-			cubeSceneNode->addAnimator(anim);
-			anim->drop();
-		}
-
-		cubeSceneNode->setScale(vector3df(5, 5, 5));
-		((IMeshSceneNode*)cubeSceneNode)->addShadowVolumeSceneNode();
-	}
-}
-
 void AddGround( ISceneManager* smgr, IVideoDriver* driver, int width, int height )
 {
 	scene::ISceneNode* groundSceneNode = smgr->addCubeSceneNode();
@@ -112,7 +92,7 @@ void SetupOde(PhysicsContext &physicsContext)
 
 	physicsContext.contactgroup = dJointGroupCreate(0);
 
-	dCreatePlane(physicsContext.space, 0, 1, 0, 0);
+	//dCreatePlane(physicsContext.space, 0, 1, 0, 0);
 
 	dWorldSetGravity(physicsContext.world, 0, -9, 0);
 
