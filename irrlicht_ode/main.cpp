@@ -1,5 +1,6 @@
 #include <irrlicht.h>
 #include <ode/ode.h>
+#include <vector>
 
 #include "controllableCamera.h"
 
@@ -35,8 +36,9 @@ struct PhysicalObject
 
 struct GenericObject
 {
-	irr::core::vector3d<double> position;
-	irr::core::vector3d<double> size;
+	irr::core::vector3df position;
+	irr::core::vector3df size;
+	double density;
 };
 
 struct VisibleObject
@@ -52,22 +54,25 @@ struct PlaceableObject
 };
 
 void SetupLightsAndShadows( ISceneManager* smgr, IVideoDriver* driver );
-void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &odeContext );
+//void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &odeContext );
 void AddGround( ISceneManager* smgr, IVideoDriver* driver, int width, int height );
 void SetupCamera( ISceneManager* smgr, IrrlichtDevice * device ) ;
 void SetupGui( IGUIEnvironment* guienv ) ;
-void SetupOde(PhysicsContext &odeContext);
-void SimulationStep(PhysicsContext &odeContext);
+void SetupOde(PhysicsContext &physicsContext);
+void SimulationStep(PhysicsContext &physicsContext);
 void nearCollisionCallback(void* data, dGeomID o1, dGeomID o2);
 void QuaternionToEuler(const dQuaternion quaternion, vector3df &euler);
-void AddOdeActor(PhysicsContext &context, PhysicalObject &physicalObject, core::vector3d<double> position, core::vector3d<double> size, dMatrix3 rotation, double density);
-void UpdateActor(PhysicsContext &context, PlaceableObject &placeableObject);
-
+void AddOdeActor(PhysicsContext &physicsContext, PhysicalObject &physicalObject, core::vector3df position, core::vector3df size, double density);
+void UpdateActor(PhysicsContext &physicsContext, PlaceableObject &placeableObject);
+void AddActor(PhysicsContext &physicsContext, ISceneManager* smgr, IVideoDriver* driver, PlaceableObject &placeableObject);
+void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &physicsContext, std::vector<PlaceableObject> &objects);
+void UpdateActors(PhysicsContext &physicsContext, std::vector<PlaceableObject> &objects);
 
 int main()
 {
 	IrrlichtDevice *device = createDevice( video::EDT_OPENGL, dimension2d<u32>(1200, 800), 32, false, true, false, 0);
 	PhysicsContext odeContext;
+	std::vector<PlaceableObject> objects;
 
 	odeContext.sceneWidth = 100;
 	odeContext.sceneHeight = 100;
@@ -86,7 +91,7 @@ int main()
 	
 	SetupGui(guienv);
 
-	AddActors(smgr, driver, odeContext);
+	AddActors(smgr, driver, odeContext, objects );
 	AddGround(smgr, driver, odeContext.sceneWidth, odeContext.sceneHeight);
 	SetupLightsAndShadows(smgr, driver);
 
@@ -105,6 +110,7 @@ int main()
 		infotext->setText(strFps.c_str());
 
 		SimulationStep(odeContext);
+		UpdateActors(odeContext, objects);
 
 		/*auto oldRotation = cubeSceneNode->getRotation();
 		cubeSceneNode->setRotation(vector3df(0.1, 0.1, 0.1)+oldRotation);*/
@@ -173,6 +179,7 @@ void AddGround( ISceneManager* smgr, IVideoDriver* driver, int width, int height
 		groundSceneNode->getMaterial(0).getTextureMatrix(0).setScale(vector3df((irr::f32) textureScale, (irr::f32) textureScale, (irr::f32) textureScale));
 
 		groundSceneNode->setScale(core::vector3df(100, 0, 100));
+		groundSceneNode->setPosition(core::vector3df(0, 0.0, 0));
 	}
 }
 
@@ -205,41 +212,41 @@ void SetupGui( IGUIEnvironment* guienv )
 	skin->setColor(EGUI_DEFAULT_COLOR::EGDC_BUTTON_TEXT , SColor(255, 255, 255, 255));
 }
 
-void SetupOde(PhysicsContext &odeContext)
+void SetupOde(PhysicsContext &physicsContext)
 {
 	dInitODE2(dInitFlagManualThreadCleanup);  	
 
-	odeContext.world = dWorldCreate();
+	physicsContext.world = dWorldCreate();
 
 	//space = dSimpleSpaceCreate(0);
-	odeContext.space = dHashSpaceCreate (0);
+	physicsContext.space = dHashSpaceCreate (0);
 
-	odeContext.contactgroup = dJointGroupCreate(0);
+	physicsContext.contactgroup = dJointGroupCreate(0);
 
-	dCreatePlane(odeContext.space, 0, 1, 0, 0);
+	dCreatePlane(physicsContext.space, 0, 1, 0, 0);
 
-	dWorldSetGravity(odeContext.world, 0, -9, 0);
+	dWorldSetGravity(physicsContext.world, 0, -9, 0);
 
-	dWorldSetERP(odeContext.world, 0.7);
+	dWorldSetERP(physicsContext.world, 0.7);
 
-	dWorldSetCFM(odeContext.world, 0.001f);//1e-2);
+	dWorldSetCFM(physicsContext.world, 0.001f);//1e-2);
 
-	dWorldSetContactMaxCorrectingVel(odeContext.world, 10);//10
+	dWorldSetContactMaxCorrectingVel(physicsContext.world, 10);//10
 
-	dWorldSetContactSurfaceLayer(odeContext.world, 0.001);
+	dWorldSetContactSurfaceLayer(physicsContext.world, 0.001);
 }
 
-void SimulationStep(PhysicsContext &odeContext)
+void SimulationStep(PhysicsContext &physicsContext)
 {
-	dSpaceCollide(odeContext.space, &odeContext, &nearCollisionCallback);
+	dSpaceCollide(physicsContext.space, &physicsContext, &nearCollisionCallback);
 
 	// make a simulation step for 'theWorld'
-	dWorldStep(odeContext.world, 0.1f); 
+	dWorldStep(physicsContext.world, 0.1f); 
 
 	//optionally use dWorldStepFast1 instead of dWorldStep
 	//dWorldStepFast1(theWorld,0.1,1);
 	// clean up joints from collisions
-	dJointGroupEmpty(odeContext.contactgroup);
+	dJointGroupEmpty(physicsContext.contactgroup);
 }
 
 void nearCollisionCallback(void* data, dGeomID o1, dGeomID o2)
@@ -298,9 +305,9 @@ void QuaternionToEuler(const dQuaternion quaternion, vector3df &euler)
 		*irr::core::RADTODEG);
 }
 
-void AddOdeActor(PhysicsContext &context, PhysicalObject &physicalObject, core::vector3d<double> position, core::vector3d<double> size, dMatrix3 rotation, double density) 
+void AddOdeActor( PhysicsContext &physicsContext, PhysicalObject &physicalObject, core::vector3df position, core::vector3df size, double density )
 {
-	auto body = dBodyCreate(context.world);
+	auto body = dBodyCreate(physicsContext.world);
 
 	/*this->size = size;
 	this->volume = (size.X * size.Y * size.Z);
@@ -309,7 +316,7 @@ void AddOdeActor(PhysicsContext &context, PhysicalObject &physicalObject, core::
 
 	dBodySetPosition(body, position.X, position.Y, position.Z);
 	dBodySetLinearVel(body, 0, 0, 0);
-	dBodySetRotation(body, rotation);
+	//dBodySetRotation(body, rotation);
 
 	//dBodySetData(this->body, (void*)(this));
 
@@ -321,14 +328,14 @@ void AddOdeActor(PhysicsContext &context, PhysicalObject &physicalObject, core::
 	dMassSetBox(&mass, density, sides[0], sides[1], sides[2]);
 	dBodySetMass(body, &mass);
 
-	auto geometry = dCreateBox(context.space, sides[0], sides[1], sides[2]);
+	auto geometry = dCreateBox(physicsContext.space, sides[0], sides[1], sides[2]);
 	dGeomSetBody(geometry, body);
 
 	physicalObject.body = body;
 	physicalObject.geometry = geometry;
 }
 
-void UpdateActor(PhysicsContext &context, PlaceableObject &placeableObject)
+void UpdateActor(PhysicsContext &physicsContext, PlaceableObject &placeableObject)
 {
 	dGeomID geom=placeableObject.physicalObject.geometry;
 	irr::core::vector3df pos;
@@ -352,5 +359,55 @@ void UpdateActor(PhysicsContext &context, PlaceableObject &placeableObject)
 
 		// set the rotation 
 		placeableObject.visibleObject.node->setRotation(rot);			
+	}
+}
+
+void AddActor(PhysicsContext &physicsContext, ISceneManager* smgr, IVideoDriver* driver, PlaceableObject &placeableObject)
+{
+	AddOdeActor(physicsContext, placeableObject.physicalObject, placeableObject.genericObject.position, placeableObject.genericObject.size, placeableObject.genericObject.density);
+
+	placeableObject.visibleObject.node = smgr->addMeshSceneNode(smgr->getGeometryCreator()->createCubeMesh());
+
+	if (placeableObject.visibleObject.node)
+	{
+		placeableObject.visibleObject.node->setMaterialTexture(0, driver->getTexture("t351sml.jpg"));
+		placeableObject.visibleObject.node->setMaterialFlag(video::EMF_LIGHTING, false);
+
+		placeableObject.visibleObject.node->setPosition(placeableObject.genericObject.position);
+		placeableObject.visibleObject.node->setScale(vector3df(placeableObject.genericObject.size.X, placeableObject.genericObject.size.Y, placeableObject.genericObject.size.Z));
+		((IMeshSceneNode*)placeableObject.visibleObject.node)->addShadowVolumeSceneNode();
+	}
+}
+
+void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &physicsContext, std::vector<PlaceableObject> &objects)
+{
+	auto width = physicsContext.sceneWidth;
+	auto height = physicsContext.sceneHeight;
+
+	auto y = 20.0f;
+
+	for (int i = 0; i < 20; i++)
+	{
+		auto x = -(width/2.0f) + rand()%(width);
+		auto z = -(height/2.0f) + rand()%(height);
+
+		auto size = vector3df(1, 1, 1);
+
+		PlaceableObject po;
+		po.genericObject.position = vector3df(x, y, z);
+		po.genericObject.size = size;
+		po.genericObject.density = 0.1;
+
+		AddActor(physicsContext, smgr, driver, po);
+
+		objects.push_back(po);
+	}
+}
+
+void UpdateActors(PhysicsContext &physicsContext, std::vector<PlaceableObject> &objects)
+{
+	for (int i = 0; i < objects.size(); i++)
+	{
+		UpdateActor(physicsContext, objects[i]);
 	}
 }
