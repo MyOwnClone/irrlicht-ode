@@ -194,20 +194,20 @@ void QuaternionToEuler(const dQuaternion quaternion, vector3df &euler)
 		*irr::core::RADTODEG);
 }
 
-void AddOdeActor( PhysicsContext &physicsContext, PhysicalObject &physicalObject, core::vector3df position, core::vector3df size, core::vector3df rotation, double density )
+void AddOdeActor( PhysicsContext &physicsContext, PhysicalObject &physicalObject, GenericObject &genericObject )
 {
 	auto body = dBodyCreate(physicsContext.world);
 
-	dBodySetPosition(body, position.X, position.Y, position.Z);
+	dBodySetPosition(body, genericObject.position.X, genericObject.position.Y, genericObject.position.Z);
 	dBodySetLinearVel(body, 0, 0, 0);
 
 	//---
 	dMatrix3 A, B, C, I, Rx, Ry, Rz;
 
 	//set up rotation matrices
-	dRFromAxisAndAngle(Rz, 0, 0, 1, rotation.Z);
-	dRFromAxisAndAngle(Ry, 0, 1, 0, rotation.Y);
-	dRFromAxisAndAngle(Rx, 1, 0, 0, rotation.X);
+	dRFromAxisAndAngle(Rz, 0, 0, 1, genericObject.rotation.Z);
+	dRFromAxisAndAngle(Ry, 0, 1, 0, genericObject.rotation.Y);
+	dRFromAxisAndAngle(Rx, 1, 0, 0, genericObject.rotation.X);
 
 	// matrix for rotation around x
 	dRFromAxisAndAngle(I, 1, 0, 0, 0);
@@ -224,10 +224,10 @@ void AddOdeActor( PhysicsContext &physicsContext, PhysicalObject &physicalObject
 
 	dMass mass;
 	dReal sides[3];
-	sides[0] = 2 * size.X;
-	sides[1] = 2 * size.Y;
-	sides[2] = 2 * size.Z;
-	dMassSetBox(&mass, density, sides[0], sides[1], sides[2]);
+	sides[0] = 2 * genericObject.size.X;
+	sides[1] = 2 * genericObject.size.Y;
+	sides[2] = 2 * genericObject.size.Z;
+	dMassSetBox(&mass, genericObject.density, sides[0], sides[1], sides[2]);
 	dBodySetMass(body, &mass);
 
 	auto geometry = dCreateBox(physicsContext.space, sides[0], sides[1], sides[2]);
@@ -237,7 +237,7 @@ void AddOdeActor( PhysicsContext &physicsContext, PhysicalObject &physicalObject
 	physicalObject.geometry = geometry;
 }
 
-void UpdateActor(PhysicsContext &physicsContext, PlaceableObject &placeableObject)
+void UpdateActor( PlaceableObject &placeableObject )
 {
 	dGeomID geom=placeableObject.physicalObject.geometry;
 	irr::core::vector3df pos;
@@ -271,7 +271,7 @@ double randFloat(double a, double b)
 
 void AddActor(PhysicsContext &physicsContext, ISceneManager* smgr, IVideoDriver* driver, PlaceableObject &placeableObject)
 {
-	AddOdeActor(physicsContext, placeableObject.physicalObject, placeableObject.genericObject.position, placeableObject.genericObject.size, placeableObject.genericObject.rotation, placeableObject.genericObject.density);
+	AddOdeActor(physicsContext, placeableObject.physicalObject, placeableObject.genericObject);
 
 	placeableObject.visibleObject.node = smgr->addMeshSceneNode(smgr->getGeometryCreator()->createCubeMesh());
 
@@ -314,10 +314,10 @@ void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &physi
 	}
 }
 
-void UpdateActors(PhysicsContext &physicsContext, std::vector<PlaceableObject> &objects)
+void UpdateActors( std::vector<PlaceableObject> &objects )
 {
 	for (int i = 0; i < objects.size(); i++)
 	{
-		UpdateActor(physicsContext, objects[i]);
+		UpdateActor(objects[i]);
 	}
 }

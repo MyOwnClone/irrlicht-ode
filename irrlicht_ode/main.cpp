@@ -63,7 +63,7 @@ int main()
 		if (frameCounter % 30 == 0)
 		{
 			SimulationStep(odeContext);
-			UpdateActors(odeContext, objects);
+			UpdateActors(objects);
 		}
 
 		frameCounter++;
