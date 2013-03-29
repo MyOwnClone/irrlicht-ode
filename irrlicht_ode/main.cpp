@@ -60,7 +60,7 @@ int main()
 		strFps += (s32)driver->getFPS();       
 		infotext->setText(strFps.c_str());
 
-		if (frameCounter % 30 == 0)
+		if (frameCounter % 10 == 0)
 		{
 			SimulationStep(odeContext);
 			UpdateActors(objects);
