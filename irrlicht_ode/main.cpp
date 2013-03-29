@@ -54,13 +54,11 @@ int main()
 
 	auto heightMap = new HeightMap(odeContext.sceneWidth, odeContext.sceneHeight);
 	pixmapInstance = GetHeightMap(odeContext.sceneWidth, odeContext.sceneHeight, 8);
-	//heightMap->Generate(GetHeightMapFunc);
 	terrainMesh.init(*heightMap, scale, white_colour_func, driver);
 
 	auto terrainMeshnode = smgr->addMeshSceneNode(terrainMesh.Mesh);
 	terrainMeshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);    
 	terrainMeshnode->setPosition(vector3df(-odeContext.sceneWidth/2, 0, -odeContext.sceneHeight/2));
-	//terrainMeshnode->setScale(vector3df(10, 1, 10));
 	terrainMeshnode->setMaterialTexture(0, driver->getTexture("sand.jpg"));
 
 	auto textureScale = 4;

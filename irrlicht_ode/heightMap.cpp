@@ -1,24 +1,6 @@
 #include "heightMap.h"
 #pragma once
 
-// Fill the heightmap with values generated from f.
-/*void HeightMap::Generate(generate_func f)
-{
-	u32 i=0;
-	for(u16 y = 0; y < Height; ++y)
-		for(u16 x = 0; x < Width; ++x)
-			Set(i++, Calc(f, x, y));
-}
-
-
-f32 HeightMap::Calc(generate_func f, u16 x, u16 y) const
-{
-	const f32 xx = (f32)x;
-	const f32 yy = (f32)y;
-	return f((u16)xx, (u16)yy, s);
-}*/
-
-
 vector3df HeightMap::GetNormal(u16 x, u16 y, f32 s) const
 {
 	const f32 zc = Get(x, y);
