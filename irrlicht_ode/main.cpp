@@ -24,8 +24,8 @@ int main()
 	PhysicsContext odeContext;
 	std::vector<PlaceableObject> objects;
 
-	odeContext.sceneWidth = 100;
-	odeContext.sceneHeight = 100;
+	odeContext.sceneWidth = 250;
+	odeContext.sceneHeight = 250;
 
 	lineWidth = odeContext.sceneWidth;
 
@@ -49,7 +49,7 @@ int main()
 	SetupLightsAndShadows(smgr, driver);
 
 	//----------------
-	auto scale = 1;
+	auto scale = 20;
 
 	TerrainMeshGenerator terrainMesh;
 

@@ -385,8 +385,8 @@ void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &physi
 	for (int i = 0; i < 200; i++)
 	{
 		auto y = randFloat(50, 350);
-		auto x = randFloat(-2*width, 2*width);
-		auto z = randFloat(-2*height, 2*height);
+		auto x = randFloat(-width, width);
+		auto z = randFloat(-height, height);
 
 		auto sizeKoef = randFloat(1, 5);
 
