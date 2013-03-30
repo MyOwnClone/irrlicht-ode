@@ -108,7 +108,7 @@ void SetupOde(PhysicsContext &physicsContext)
 
 void SimulationStep(PhysicsContext &physicsContext)
 {
-	dSpaceCollide(physicsContext.space, &physicsContext, &nearCollisionCallback);
+	dSpaceCollide(physicsContext.space, &physicsContext, &NearCollisionCallback);
 
 	// make a simulation step for 'theWorld'
 	dWorldStep(physicsContext.world, 0.1f); 
@@ -119,7 +119,7 @@ void SimulationStep(PhysicsContext &physicsContext)
 	dJointGroupEmpty(physicsContext.contactgroup);
 }
 
-void nearCollisionCallback(void* data, dGeomID o1, dGeomID o2)
+void NearCollisionCallback(void* data, dGeomID o1, dGeomID o2)
 {
 	int i=0;
 
@@ -152,114 +152,6 @@ void nearCollisionCallback(void* data, dGeomID o1, dGeomID o2)
 		for(i = 0; i < numc; i++){		
 			dJointID c = dJointCreateContact(odeContext->world, odeContext->contactgroup, &contact[i]);
 			dJointAttach(c, b1, b2);
-		}
-	}
-}
-
-void nearCollisionCallback2(void *data, dGeomID o1, dGeomID o2)
-{
-	int numc;
-	dBodyID b1;
-	dBodyID b2;
-	int floor;
-
-	/* Create an array of dContact objects to hold the contact joints */
-	dContact contact[MAX_CONTACTS];
-
-	PhysicsContext* odeContext = (PhysicsContext*) data;
-
-	/* Temporary index for each contact */
-	int i;
-
-	/* Get the dynamics body for each geom */
-	b1 = dGeomGetBody(o1);
-	b2 = dGeomGetBody(o2);
-
-	dReal zero[3] = {0,0,0};
-	dReal* linVel1, *linVel2;
-	dReal lv[3];
-	if( b1 == 0 )
-		linVel1 = zero;
-	else
-		linVel1 = (dReal*)dBodyGetLinearVel  (b1);
-
-	if( b2 == 0 )
-		linVel2 = zero;
-	else
-		linVel2 = (dReal*)dBodyGetLinearVel  (b2);
-
-	lv[0] = linVel1[0]-linVel2[0];
-	lv[1] = linVel1[1]-linVel2[1];
-	lv[2] = linVel1[2]-linVel2[2];
-
-	double lvf = sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
-	double p = pow(2,(lvf/10)) -4;
-
-	if( p < 0 ) p = 0;
-				
-	floor = 0;
-	if( dGeomGetClass(o1) == dPlaneClass || dGeomGetClass(o2) == dPlaneClass )
-		floor = 1;
-
-	/*if (b1 && b2 && dAreConnectedExcluding (b1,b2,dJointTypeContact)) 
-		return;*/
-	
-	/* Now we set the joint properties of each contact. Going into the
-	full details here would require a tutorial of its own. I'll just
-	say that the members of the dContact structure control the joint
-	behaviour, such as friction, velocity and bounciness. See section
-	7.3.7 of the ODE manual and have fun experimenting to learn
-	more. */
-	for (i = 0; i < MAX_CONTACTS; i++)
-	{
-		contact[i].surface.mode = dContactBounce | dContactSoftCFM;
-		contact[i].surface.mu = dInfinity;
-		contact[i].surface.mu2 = 0;
-		/*contact[i].surface.bounce = 0.0001f;
-		contact[i].surface.bounce_vel = 0.001f;
-		contact[i].surface.soft_cfm = 0.001f;*/
-		contact[i].surface.bounce=1e-5f;
-		contact[i].surface.bounce_vel=1e-9f;
-		contact[i].surface.soft_cfm=1e-6f;
-	}
-
-	/* Here we do the actual collision test by calling dCollide. It
-	returns the number of actual contact points or zero if there were
-	none. As well as the geom IDs, max number of contacts we also
-	pass the address of a dContactGeom as the fourth
-	parameter. dContactGeom is a substructure of a dContact object so
-	we simply pass the address of the first dContactGeom from our
-	array of dContact objects and then pass the offset to the next
-	dContactGeom as the fifth paramater, which is the size of a
-	dContact structure. That made sense didn't it? */
-
-	auto o1geomClass = dGeomGetClass(o1);
-	auto o2geomClass = dGeomGetClass(o2);
-
-	/*if (o1geomClass == dHeightfieldClass || o2geomClass == dHeightfieldClass)
-		return;*/
-
-	if ( (numc = dCollide(o1, o2, MAX_CONTACTS, &contact[0].geom, sizeof(dContact))) )
-	{
-		/* To add each contact point found to our joint group we call
-		dJointCreateContact which is just one of the many different
-		joint types available. */
-		for (i = 0; i < numc; i++)
-		{
-			/* dJointCreateContact needs to know which world and joint
-			group to work with as well as the dContact object
-			itself. It returns a new dJointID which we then use with
-			dJointAttach to finally create the temporary contact
-			joint between the two geom bodies. */
-			
-			//if( !(dGeomGetClass(o1) == dBoxClass && dGeomGetClass(o2) == dBoxClass ))
-			{
-				dJointID c;
-				
-				c = dJointCreateContact(odeContext->world, odeContext->contactgroup, contact + i);
-				dJointAttach(c, b1, b2);
-			}
-
 		}
 	}
 }
@@ -356,7 +248,7 @@ void UpdateActor( PlaceableObject &placeableObject )
 	}
 }
 
-double randFloat(double a, double b)
+double RandFloat(double a, double b)
 {
 	return ((b-a)*((double)rand()/RAND_MAX))+a;
 }
@@ -385,11 +277,11 @@ void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &physi
 
 	for (int i = 0; i < 200; i++)
 	{
-		auto y = randFloat(50, 350);
-		auto x = randFloat(-width, width);
-		auto z = randFloat(-height, height);
+		auto y = RandFloat(50, 350);
+		auto x = RandFloat(-width, width);
+		auto z = RandFloat(-height, height);
 
-		auto sizeKoef = randFloat(1, 5);
+		auto sizeKoef = RandFloat(1, 5);
 
 		auto size = vector3df(sizeKoef, sizeKoef, sizeKoef);
 
@@ -398,7 +290,7 @@ void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &physi
 		po.genericObject.size = size;
 		po.genericObject.density = 0.1;
 
-		po.genericObject.rotation = vector3df(randFloat(0, 1), randFloat(0, 1), randFloat(0, 1));
+		po.genericObject.rotation = vector3df(RandFloat(0, 1), RandFloat(0, 1), RandFloat(0, 1));
 
 		AddActor(physicsContext, smgr, driver, po);
 
@@ -413,8 +305,6 @@ void UpdateActors( std::vector<PlaceableObject> &objects )
 		UpdateActor(objects[i]);
 	}
 }
-
-
 
 void AddTerrain( PhysicsContext &odeContext, IVideoDriver* driver, ISceneManager* smgr, int scale ) 
 {
