@@ -52,7 +52,7 @@ void SetupLightsAndShadows( ISceneManager* smgr, IVideoDriver* driver );
 void AddGround( ISceneManager* smgr, IVideoDriver* driver, int width, int height );
 void SetupCamera( ISceneManager* smgr, IrrlichtDevice * device ) ;
 void SetupGui( IGUIEnvironment* guienv ) ;
-void SetupOde(PhysicsContext &physicsContext);
+void SetupOde(PhysicsContext &physicsContext, bool createPlane = false);
 void SimulationStep(PhysicsContext &physicsContext);
 void NearCollisionCallback(void* data, dGeomID o1, dGeomID o2);
 void QuaternionToEuler(const dQuaternion quaternion, vector3df &euler);

@@ -82,7 +82,7 @@ void SetupGui( IGUIEnvironment* guienv )
 	skin->setColor(EGUI_DEFAULT_COLOR::EGDC_BUTTON_TEXT , SColor(255, 255, 255, 255));
 }
 
-void SetupOde(PhysicsContext &physicsContext)
+void SetupOde( PhysicsContext &physicsContext, bool createPlane /*= false*/ )
 {
 	dInitODE2(dInitFlagManualThreadCleanup);  	
 
@@ -93,7 +93,8 @@ void SetupOde(PhysicsContext &physicsContext)
 
 	physicsContext.contactgroup = dJointGroupCreate(0);
 
-	//dCreatePlane(physicsContext.space, 0, 1, 0, 0);
+	if (createPlane)
+		dCreatePlane(physicsContext.space, 0, 1, 0, 0);
 
 	dWorldSetGravity(physicsContext.world, 0, -9, 0);
 
