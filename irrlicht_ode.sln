@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "irrlicht_ode", "irrlicht_ode\irrlicht_ode.vcxproj", "{CF5F1116-7208-4950-AA76-8CE2E0E7F06E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "irrlicht_ode_specimen", "..\irrlicht_ode_specimen\irrlicht_ode_specimen.vcxproj", "{7A9A3ACB-F8F7-43D5-9726-EA036401086F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +15,10 @@ Global
 		{CF5F1116-7208-4950-AA76-8CE2E0E7F06E}.Debug|Win32.Build.0 = Debug|Win32
 		{CF5F1116-7208-4950-AA76-8CE2E0E7F06E}.Release|Win32.ActiveCfg = Release|Win32
 		{CF5F1116-7208-4950-AA76-8CE2E0E7F06E}.Release|Win32.Build.0 = Release|Win32
+		{7A9A3ACB-F8F7-43D5-9726-EA036401086F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7A9A3ACB-F8F7-43D5-9726-EA036401086F}.Debug|Win32.Build.0 = Debug|Win32
+		{7A9A3ACB-F8F7-43D5-9726-EA036401086F}.Release|Win32.ActiveCfg = Release|Win32
+		{7A9A3ACB-F8F7-43D5-9726-EA036401086F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
