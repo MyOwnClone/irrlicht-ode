@@ -6,10 +6,10 @@
 #include <math.h>
 #include "perlinMath.h"
 
-static int p[B + B + 2];
-static double g3[B + B + 2][3];
-static double g2[B + B + 2][2];
-static double g1[B + B + 2];
+static int p[BP + BP + 2];
+static double g3[BP + BP + 2][3];
+static double g2[BP + BP + 2][2];
+static double g1[BP + BP + 2];
 static int start = 1;
 
 
@@ -72,32 +72,32 @@ void init(void)
 {
    int i, j, k;
 
-   for (i = 0 ; i < B ; i++) {
+   for (i = 0 ; i < BP ; i++) {
       p[i] = i;
-      g1[i] = (double)((rand() % (B + B)) - B) / B;
+      g1[i] = (double)((rand() % (BP + BP)) - BP) / BP;
 
       for (j = 0 ; j < 2 ; j++)
-         g2[i][j] = (double)((rand() % (B + B)) - B) / B;
+         g2[i][j] = (double)((rand() % (BP + BP)) - BP) / BP;
       normalize2(g2[i]);
 
       for (j = 0 ; j < 3 ; j++)
-         g3[i][j] = (double)((rand() % (B + B)) - B) / B;
+         g3[i][j] = (double)((rand() % (BP + BP)) - BP) / BP;
       normalize3(g3[i]);
    }
 
    while (--i) {
       k = p[i];
-      p[i] = p[j = rand() % B];
+      p[i] = p[j = rand() % BP];
       p[j] = k;
    }
 
-   for (i = 0 ; i < B + 2 ; i++) {
-      p[B + i] = p[i];
-      g1[B + i] = g1[i];
+   for (i = 0 ; i < BP + 2 ; i++) {
+      p[BP + i] = p[i];
+      g1[BP + i] = g1[i];
       for (j = 0 ; j < 2 ; j++)
-         g2[B + i][j] = g2[i][j];
+         g2[BP + i][j] = g2[i][j];
       for (j = 0 ; j < 3 ; j++)
-         g3[B + i][j] = g3[i][j];
+         g3[BP + i][j] = g3[i][j];
    }
 }
 

@@ -22,5 +22,6 @@ void putpixel(pixmap *p,
 void mapPalette(int palette, int iter, char *r, char *g, char *b);
 
 pixmap * GetHeightMap(int width, int height, int palette);
+pixmap * GetRandomPerlinTexture( int width, int height, int palette );
 
 #endif

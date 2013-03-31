@@ -756,3 +756,30 @@ void mapPalette(int palette, int iter, char *r, char *g, char *b)
 	*g=(*p)[iter][1];
 	*b=(*p)[iter][2];
 }
+
+pixmap * GetRandomPerlinTexture( int width, int height, int palette )
+{
+	pixmap * result = createPixmap(width, height);
+
+	int n = 30;
+	int alpha = 2;
+	int beta = 2;
+	double mez = 3;
+
+	init();
+	double y1 = -mez;
+	for (unsigned int y = 0; y < result->height; y++) {             // pro vsechny radky pixmapy
+		double x1 = -mez;
+		for (unsigned int x = 0; x < result->width; x++) {          // pro vsechny pixely na radku
+			char r, g, b;
+			x1 += ((mez)-(-mez)) / result->width;         // pocatecni hodnota x1
+			auto z = PerlinNoise2D(x1, y1, alpha, beta, n); // vypocet sumove funkce
+			int i = (int) (z*32.0+128);                       // aplikace zesileni a offsetu
+			mapPalette(palette, i & 0xff, &r, &g, &b); // mapovani na barvovou paletu
+			putpixel(result, x, y, r, g, b);       // a vytisteni pixelu
+		}
+		y1 += ((mez)-(-mez))/result->height;            // prechod na dalsi radek
+	}
+
+	return result;
+}
