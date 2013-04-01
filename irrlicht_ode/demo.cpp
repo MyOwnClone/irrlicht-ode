@@ -311,9 +311,7 @@ void AddTerrain( PhysicsContext &odeContext, IVideoDriver* driver, ISceneManager
 {
 	TerrainMeshGenerator terrainMesh;
 
-	//auto heightMap = new HeightMap(odeContext.sceneWidth, odeContext.sceneHeight);
 	pixmapInstance = GetHeightMap(odeContext.sceneWidth, odeContext.sceneHeight, 8);
-	//terrainMesh.init(*heightMap, scale, white_colour_func, driver);
 	terrainMesh.init(pixmapInstance, scale, white_colour_func, driver);
 
 	auto terrainMeshnode = smgr->addMeshSceneNode(terrainMesh.Mesh);
@@ -325,16 +323,17 @@ void AddTerrain( PhysicsContext &odeContext, IVideoDriver* driver, ISceneManager
 	terrainMeshnode->setMaterialFlag(video::EMF_TEXTURE_WRAP, false);
 	terrainMeshnode->getMaterial(0).getTextureMatrix(0).setScale(vector3df((irr::f32) textureScale, (irr::f32) textureScale, (irr::f32) textureScale));
 
+	//terrainMeshnode->setVisible(false);
 
 	dHeightfieldDataID heightid = dGeomHeightfieldDataCreate();
 
-	const u32 widthSamples = 2; // the width of each piece
-	const u32 depthSamples = 2; // the width of each piece
+	const u32 widthSamples = odeContext.sceneWidth; // the width of each piece
+	const u32 depthSamples = odeContext.sceneHeight; // the width of each piece
 
 	// Our heightfield geom
 
 	dGeomHeightfieldDataBuildCallback( heightid, NULL, ode_heightfield_callback, odeContext.sceneWidth, odeContext.sceneHeight, widthSamples, depthSamples, 
-		REAL( scale), 
+		REAL( scale ), 
 		REAL( 0.0 ), // offset
 		REAL( 0.0 ), // thickness
 		0 ); // wrap?
@@ -343,8 +342,6 @@ void AddTerrain( PhysicsContext &odeContext, IVideoDriver* driver, ISceneManager
 	// makes AABB computation more accurate than +/-INF.
 	dGeomHeightfieldDataSetBounds( heightid, REAL( -300.0 ), REAL( +300.0 ) );
 	dGeomID gheight = dCreateHeightfield( odeContext.space, heightid, 1 );
-
-	//dGeomHeightfieldGetHeightfieldData()
 
 	dVector3 pos;
 	pos[ 0 ] = 0;
