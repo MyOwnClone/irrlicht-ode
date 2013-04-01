@@ -1,7 +1,7 @@
 #ifndef PERLIN_MATH
 #define PERLIN_MATH
 
-#define BP 0x100
+#define BP 0x200
 #define BM 0xff
 #define N 0x1000
 #define NP 12   /* 2^N */

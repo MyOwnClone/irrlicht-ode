@@ -63,3 +63,4 @@ void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &physi
 void UpdateActors(std::vector<PlaceableObject> &objects);
 double RandFloat(double a, double b);
 void AddTerrain( PhysicsContext &odeContext, IVideoDriver* driver, ISceneManager* smgr, int scale ) ;
+void AddVisibleActor( PlaceableObject &placeableObject, ISceneManager* smgr, IVideoDriver* driver ) ;

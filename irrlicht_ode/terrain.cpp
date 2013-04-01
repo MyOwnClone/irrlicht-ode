@@ -125,15 +125,21 @@ void TerrainMeshGenerator::init(pixmap *pixmapInstance, f32 scale, colour_func c
 	Scale = scale;
 
 	const u32 mp = driver -> getMaximalPrimitiveCount();
+
 	Width = pixmapInstance->width;
 	Height = pixmapInstance->height;
 
-	const u32 sw = mp / (6 * Height); // the width of each piece
+	u32 sw = mp / (6 * Height); // the width of each piece
+
+	if (sw > 65535U)
+	{
+		sw = 10;
+	}	
 
 	u32 i=0;
 	for(u32 y0 = 0; y0 < Height; y0 += sw)
 	{
-		u16 y1 = y0 + sw;
+		u32 y1 = y0 + sw;
 		if (y1 >= Height)
 			y1 = Height - 1; // the last one might be narrower
 		addstrip(pixmapInstance, cf, y0, y1, i);
@@ -154,7 +160,7 @@ void TerrainMeshGenerator::init(pixmap *pixmapInstance, f32 scale, colour_func c
 	Mesh->recalculateBoundingBox();
 }
 
-void TerrainMeshGenerator::addstrip(pixmap *pixmapInstance, colour_func cf, u16 y0, u16 y1, u32 bufNum)
+void TerrainMeshGenerator::addstrip(pixmap *pixmapInstance, colour_func cf, u32 y0, u32 y1, u32 bufNum)
 {
 	SMeshBuffer *buf = 0;
 	if (bufNum<Mesh->getMeshBufferCount())
@@ -172,9 +178,9 @@ void TerrainMeshGenerator::addstrip(pixmap *pixmapInstance, colour_func cf, u16 
 	buf->Vertices.set_used((1 + y1 - y0) * Width);
 
 	u32 i=0;
-	for (u16 y = y0; y <= y1; ++y)
+	for (u32 y = y0; y <= y1; ++y)
 	{
-		for (u16 x = 0; x < Width; ++x)
+		for (u32 x = 0; x < Width; ++x)
 		{
 			const f32 z = pixmapInstance->pixels[(x*3) + (y*Width*3)]/255.0;
 			const f32 xx = (f32)x/(f32)Width;
@@ -192,11 +198,11 @@ void TerrainMeshGenerator::addstrip(pixmap *pixmapInstance, colour_func cf, u16 
 
 	buf->Indices.set_used(6 * (Width - 1) * (y1 - y0));
 	i=0;
-	for(u16 y = y0; y < y1; ++y)
+	for(u32 y = y0; y < y1; ++y)
 	{
-		for(u16 x = 0; x < Width - 1; ++x)
+		for(u32 x = 0; x < Width - 1; ++x)
 		{
-			const u16 n = (y-y0) * Width + x;
+			const u32 n = (y-y0) * Width + x;
 			buf->Indices[i]=n;
 			buf->Indices[++i]=n + Width;
 			buf->Indices[++i]=n + Width + 1;
@@ -210,7 +216,7 @@ void TerrainMeshGenerator::addstrip(pixmap *pixmapInstance, colour_func cf, u16 
 	buf->recalculateBoundingBox();
 }	
 
-core::vector3df TerrainMeshGenerator::GetNormal(u16 x, u16 y, f32 s) const
+core::vector3df TerrainMeshGenerator::GetNormal(u32 x, u32 y, f32 s) const
 {
 	const f32 zc = Get(x, y);
 	f32 zl, zr, zu, zd;

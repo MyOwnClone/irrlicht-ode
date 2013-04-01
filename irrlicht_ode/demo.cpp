@@ -254,10 +254,8 @@ double RandFloat(double a, double b)
 	return ((b-a)*((double)rand()/RAND_MAX))+a;
 }
 
-void AddActor(PhysicsContext &physicsContext, ISceneManager* smgr, IVideoDriver* driver, PlaceableObject &placeableObject)
+void AddVisibleActor( PlaceableObject &placeableObject, ISceneManager* smgr, IVideoDriver* driver ) 
 {
-	AddOdeActor(physicsContext, placeableObject.physicalObject, placeableObject.genericObject);
-
 	placeableObject.visibleObject.node = smgr->addMeshSceneNode(smgr->getGeometryCreator()->createCubeMesh());
 
 	if (placeableObject.visibleObject.node)
@@ -271,16 +269,22 @@ void AddActor(PhysicsContext &physicsContext, ISceneManager* smgr, IVideoDriver*
 	}
 }
 
+void AddActor(PhysicsContext &physicsContext, ISceneManager* smgr, IVideoDriver* driver, PlaceableObject &placeableObject)
+{
+	AddOdeActor(physicsContext, placeableObject.physicalObject, placeableObject.genericObject);
+	AddVisibleActor(placeableObject, smgr, driver);
+}
+
 void AddActors( ISceneManager* smgr, IVideoDriver* driver, PhysicsContext &physicsContext, std::vector<PlaceableObject> &objects)
 {
 	auto width = physicsContext.sceneWidth;
 	auto height = physicsContext.sceneHeight;
 
-	for (int i = 0; i < 200; i++)
+	for (int i = 0; i < 400; i++)
 	{
-		auto y = RandFloat(50, 350);
-		auto x = RandFloat(-width, width);
-		auto z = RandFloat(-height, height);
+		auto y = RandFloat(50, 400);
+		auto x = RandFloat(-width/2, width/2);
+		auto z = RandFloat(-height/2, height/2);
 
 		auto sizeKoef = RandFloat(1, 5);
 

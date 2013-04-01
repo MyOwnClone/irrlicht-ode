@@ -15,7 +15,7 @@ using namespace gui;
 
 #ifdef _IRR_WINDOWS_
 #pragma comment(lib, "Irrlicht.lib")
-#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
 int main()
@@ -24,8 +24,8 @@ int main()
 	PhysicsContext odeContext;
 	std::vector<PlaceableObject> objects;
 
-	odeContext.sceneWidth = 256;
-	odeContext.sceneHeight = 256;
+	odeContext.sceneWidth = 512;
+	odeContext.sceneHeight = 512;
 
 	lineWidth = odeContext.sceneWidth;
 
@@ -34,7 +34,7 @@ int main()
 	if (!device)
 		return 1;
 
-	device->setWindowCaption(L"Irrlicht Engine");
+	device->setWindowCaption(L"REPO prototype");
 
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager* smgr = device->getSceneManager();
@@ -49,9 +49,7 @@ int main()
 
 	//----------------
 	auto scale = 80;
-
 	AddTerrain(odeContext, driver, smgr, scale);
-
 	//----------------
 
 	auto infotext = guienv->addStaticText(L"Irrlicht",	rect<s32>(10, 10, 200, 40), true);	
@@ -70,7 +68,7 @@ int main()
 		strFps += (s32)driver->getFPS();       
 		infotext->setText(strFps.c_str());
 
-		if (frameCounter % 5 == 0)
+		if (frameCounter % 1 == 0)
 		{
 			SimulationStep(odeContext);
 			UpdateActors(objects);
